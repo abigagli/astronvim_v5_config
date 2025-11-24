@@ -14,7 +14,7 @@
 --   end,
 -- }
 return {
-  "saghen/blink.cmp",
+  "Saghen/blink.cmp",
   dependencies = {
     {
       "Exafunction/codeium.nvim",
