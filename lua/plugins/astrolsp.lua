@@ -1,4 +1,4 @@
-if true then return {} end -- WARN: REMOVE THIS LINE TO ACTIVATE THIS FILE
+-- if true then return {} end -- WARN: REMOVE THIS LINE TO ACTIVATE THIS FILE
 
 -- AstroLSP allows you to customize the features in AstroNvim's LSP configuration engine
 -- Configuration documentation can be found with `:h astrolsp`
@@ -13,7 +13,7 @@ return {
     -- Configuration table of features provided by AstroLSP
     features = {
       codelens = true, -- enable/disable codelens refresh on start
-      inlay_hints = false, -- enable/disable inlay hints on start
+      inlay_hints = true, -- enable/disable inlay hints on start
       semantic_tokens = true, -- enable/disable semantic token highlighting
     },
     -- customize lsp formatting options
@@ -45,6 +45,32 @@ return {
     ---@diagnostic disable: missing-fields
     config = {
       -- clangd = { capabilities = { offsetEncoding = "utf-8" } },
+
+      -- Uncomment this to activate io_proxy mitm to sniff
+      -- stdin/stdout communication with rust-analyzer
+      -- NOTE: Alternatively, you can 'export RA_LOG=rust_analyzer=info' before
+      -- starting nvim and then check logs with ':RustLsp logFile'
+      -- rust_analyzer = {
+      --
+      --   cmd = {
+      --     "/tmp/io_proxy",
+      --     "rust-analyzer",
+      --   },
+      -- },
+      --
+      --
+      -- NOTE: Disable this if using crates.nvim in-process LSP
+      -- taplo = {
+      --   on_attach = function(_, bufnr)
+      --     vim.keymap.set({ "n" }, "K", function()
+      --       if vim.fn.expand "%:t" == "Cargo.toml" and require("crates").popup_available() then
+      --         require("crates").show_popup()
+      --       else
+      --         vim.lsp.buf.hover()
+      --       end
+      --     end, { desc = "Show Crate Documentation", buffer = bufnr })
+      --   end,
+      -- },
     },
     -- customize how language servers are attached
     handlers = {

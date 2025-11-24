@@ -1,4 +1,4 @@
-if true then return {} end -- WARN: REMOVE THIS LINE TO ACTIVATE THIS FILE
+-- if true then return {} end -- WARN: REMOVE THIS LINE TO ACTIVATE THIS FILE
 
 -- AstroCore provides a central place to modify mappings, vim options, autocommands, and more!
 -- Configuration documentation can be found with `:h astrocore`
@@ -15,7 +15,7 @@ return {
       large_buf = { size = 1024 * 256, lines = 10000 }, -- set global limits for large files for disabling features like treesitter
       autopairs = true, -- enable autopairs at start
       cmp = true, -- enable completion at start
-      diagnostics = { virtual_text = true, virtual_lines = false }, -- diagnostic settings on startup
+      diagnostics = { virtual_text = true, virtual_lines = true }, -- diagnostic settings on startup
       highlighturl = true, -- highlight URLs at start
       notifications = true, -- enable notifications at start
     },
@@ -27,20 +27,23 @@ return {
     -- passed to `vim.filetype.add`
     filetypes = {
       -- see `:h vim.filetype.add` for usage
-      extension = {
-        foo = "fooscript",
-      },
+      -- extension = {
+      --   foo = "fooscript",
+      -- },
+      -- filename = {
+      --   [".foorc"] = "fooscript",
+      -- },
+      -- pattern = {
+      --   [".*/etc/foo/.*"] = "fooscript",
+      -- },
       filename = {
-        [".foorc"] = "fooscript",
-      },
-      pattern = {
-        [".*/etc/foo/.*"] = "fooscript",
+        ["~/.ssh/config"] = "sshconfig",
       },
     },
     -- vim options can be configured here
     options = {
       opt = { -- vim.opt.<key>
-        relativenumber = true, -- sets vim.opt.relativenumber
+        relativenumber = false, -- sets vim.opt.relativenumber
         number = true, -- sets vim.opt.number
         spell = false, -- sets vim.opt.spell
         signcolumn = "yes", -- sets vim.opt.signcolumn to yes
@@ -60,8 +63,8 @@ return {
         -- second key is the lefthand side of the map
 
         -- navigate buffer tabs
-        ["]b"] = { function() require("astrocore.buffer").nav(vim.v.count1) end, desc = "Next buffer" },
-        ["[b"] = { function() require("astrocore.buffer").nav(-vim.v.count1) end, desc = "Previous buffer" },
+        L = { function() require("astrocore.buffer").nav(vim.v.count1) end, desc = "Next buffer" },
+        H = { function() require("astrocore.buffer").nav(-vim.v.count1) end, desc = "Previous buffer" },
 
         -- mappings seen under group name "Buffer"
         ["<Leader>bd"] = {
@@ -79,6 +82,20 @@ return {
 
         -- setting a mapping to false will disable it
         -- ["<C-S>"] = false,
+
+        -- Reconfigure mappings for smart-splits.nvim resize functionality
+        -- 1) Disable the Control-arrow configuration set in AstroNvim/lua/astronvim/plugins/smart-splits.lua
+        --    since,  a) C-Up and C-Down conflict with macos shortcuts for mission-control
+        --    and     b) We want to use the saem ALT-h,j,k,l based mappings that we use in wezterm
+        ["<C-Up>"] = false,
+        ["<C-Down>"] = false,
+        ["<C-Left>"] = false,
+        ["<C-Right>"] = false,
+        -- 2) Add the ALT-based configuration that matches what we've set-up in wezterm
+        ["<A-k>"] = { function() require("smart-splits").resize_up() end, desc = "Resize split up" },
+        ["<A-j>"] = { function() require("smart-splits").resize_down() end, desc = "Resize split down" },
+        ["<A-h>"] = { function() require("smart-splits").resize_left() end, desc = "Resize split left" },
+        ["<A-l>"] = { function() require("smart-splits").resize_right() end, desc = "Resize split right" },
       },
     },
   },
