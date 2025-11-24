@@ -33,4 +33,5 @@ return {
   { import = "astrocommunity.recipes.neovide" },
   { import = "astrocommunity.recipes.ai" },
   { import = "astrocommunity.recipes.diagnostic-virtual-lines-current-line" },
+  { import = "astrocommunity.recipes.vscode" },
 }
