@@ -1,0 +1,14 @@
+{
+  "name": "user_snippets",
+  "engines": {
+    "vscode": "^1.24.0"
+  },
+  "contributes": {
+    "snippets": [
+      {
+        "language": "rust",
+        "path": "./rust.json"
+      }
+    ]
+  }
+}
