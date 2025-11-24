@@ -15,7 +15,9 @@ return {
       large_buf = { size = 1024 * 256, lines = 10000 }, -- set global limits for large files for disabling features like treesitter
       autopairs = true, -- enable autopairs at start
       cmp = true, -- enable completion at start
-      diagnostics = { virtual_text = true, virtual_lines = true }, -- diagnostic settings on startup
+      -- NOTE: Disable this and just set diagnostics = true to let ="astrocommunity.recipes.diagnostic-virtual-lines-current-line" do its job
+      -- diagnostics = { virtual_text = true, virtual_lines = false }, -- diagnostic settings on startup
+      diagnostics = true,
       highlighturl = true, -- highlight URLs at start
       notifications = true, -- enable notifications at start
     },
