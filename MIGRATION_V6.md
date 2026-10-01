@@ -251,7 +251,9 @@ Probe `probe_all.lua`: read lazy.nvim's spec warnings (`Config.spec.notifs`), th
         downloads/logs/cache (lazy 393M, mason 1.4G, site 49M with the old `.dylib` parsers,
         logs, codeium/smart_splits leftovers).
   - [ ] 7.2 Last commit on `v6`: delete `MIGRATION_V6.md`, `CLAUDE.md`, `migration_probes/`.
-        (Copy this checklist into the session first: after this commit it is gone from disk.)
+        (Copy this checklist into the session first: after this commit it is gone from disk.
+        Copy `migration_probes/*.lua` into the new session's scratchpad first too: 7.7 needs
+        them. My rule: nothing copied from a scratchpad may stay in the repo.)
   - [ ] 7.3 I quit every running Neovim and Neovide (they write shada on exit).
   - [ ] 7.4 Move aside (do not delete): `~/.local/share/nvim` -> `~/.local/share/nvim.v5bak`,
         same for `~/.local/state/nvim` and `~/.cache/nvim`.
@@ -264,7 +266,9 @@ Probe `probe_all.lua`: read lazy.nvim's spec warnings (`Config.spec.notifs`), th
         just retries), then the probes in `migration_probes/` (copy them out before 7.2, or
         re-create) with `NVIM_APPNAME` unset. Expect: no errors, `:messages` empty, Rust buffer
         TS active. Then a short interactive look from me (plain `nvim` + Neovide).
-  - [ ] 7.8 `git push origin main` (fast-forward; chezmoi `--ff-only` keeps working).
+  - [ ] 7.8 Before pushing, verify on `main`: `git -C ~/.config/nvim ls-files migration_probes
+        MIGRATION_V6.md CLAUDE.md` prints nothing (no scratchpad copies or migration notes left).
+        Then `git push origin main` (fast-forward; chezmoi `--ff-only` keeps working).
   - [ ] 7.9 Later, each with my OK: delete the `*.v5bak` folders; `git worktree remove
         ~/.config/astronvim_v6`; delete branch `v6`; delete `~/.local/share|state/astronvim_v6`
         and `~/.cache/astronvim_v6`.
