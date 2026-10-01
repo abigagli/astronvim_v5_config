@@ -48,6 +48,30 @@ starts with it loaded. The first unticked box in the checklist is the resume poi
   My `lua/plugins/treesitter.lua` disables nvim-treesitter and `treesitter-manager.lua` uses
   `romus204/tree-sitter-manager.nvim` instead.
 
+## First boot results (step 1, 2026-10-01)
+
+Headless `Lazy! sync` exit 0, 58 plugins, no errors (only cargo/LuaSnip build noise).
+`lazy-lock.json` is in `.gitignore`, so the sync leaves no diff. The probe opened
+`lua/plugins/astrolsp.lua` and a tiny cargo project's `main.rs`, ran twice (2nd run = steady
+state, the same except for mason install notices). Clients attached: null-ls, lua_ls, stylua,
+rust-analyzer. **No errors**; `:messages` holds only one line:
+`client.supports_method is deprecated`. Every finding, by the step that handles it:
+
+- **Step 2 (AstroLSP)**: the `supports_method` warning comes from **my**
+  `lua/plugins/astrolsp.lua:119` (`check_cond`, called from astrolsp `configure_buffer` on
+  `LspAttach`); stack trace shows it hits both the none-ls client and nvim's own client. No other
+  source in v6, so fixing line 119 should clear the message.
+- **Step 3 (treesitter)**: treesitter was not active on the Rust buffer. Cause: the v6 data
+  dir has no parsers. v5 has 55 hand-installed ones in `~/.local/share/nvim/site/parser`
+  (tree-sitter-manager, `ensure_installed`/`auto_install` both off). Not a v6 bug, but step 3
+  must decide how v6 gets its parsers.
+- **Step 4 (community)**: `vim.validate{table}` deprecation (silent: target 1.0, not shown in
+  `:messages`) from `lsp_lines.nvim` `render.lua:50`, reached via the community recipe
+  `diagnostic-virtual-lines-current-line`. Upstream-only; note it, no action.
+- **Upstream, no action**: the same silent `vim.validate{table}` deprecation from
+  `mason-null-ls.nvim` `settings.lua:46` (called by AstroNvim's own none-ls config).
+- **Step 5 (aerial)**: `<Leader>lS` fed in the probe raised no error; the visual check is mine.
+
 ## How to work with me (rules for every session)
 
 - I work in short slots: keep every step small, commit it on `v6` with a clear message, and
@@ -70,7 +94,7 @@ starts with it loaded. The first unticked box in the checklist is the resume poi
 ## Checklist
 
 - [x] 0. Create worktree + branch `v6`, set `version = "^6"`, write this file.
-- [ ] 1. First boot: headless `Lazy! sync` in the shadow install; collect every error/warning
+- [x] 1. First boot: headless `Lazy! sync` in the shadow install; collect every error/warning
       with a probe; record them here.
 - [ ] 2. AstroLSP: rewrite `handlers` comments to v6 style, check `config["*"]`, fix
       `supports_method` (dot -> colon) and the codelens call.
