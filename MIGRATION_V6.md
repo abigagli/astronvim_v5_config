@@ -34,11 +34,12 @@ starts with it loaded. The first unticked box in the checklist is the resume poi
   indicator, which AstroCore only enables when nvim-treesitter reports the parser; parsers
   install themselves; the nvim-treesitter commit is AstroNvim's tested pin. Never run both
   (shared `site/parser` + `site/queries`). Evidence in "Step 3" below.
-- **On trial: blink "snippet first"** (`lua/plugins/blink.lua`, 2026-10-01). Stock `<Tab>` moves
-  through an open menu before jumping snippet fields; inside snippets the auto-shown menu got in
-  the way (check 15). The file reorders AstroNvim's own lists to
-  `{ snippet_forward, select_next, <show-fn>, fallback }` (same for `<S-Tab>`). Revert = delete
-  the file (or `git revert` its commit) if it doesn't feel better.
+- **Keep blink "snippet first"** (`lua/plugins/blink.lua`, tried and kept 2026-10-01). Stock
+  `<Tab>` moves through an open menu before jumping snippet fields; inside snippets the
+  auto-shown menu got in the way (check 15). The file reorders AstroNvim's own lists to
+  `{ snippet_forward, select_next, <show-fn>, fallback }` (same for `<S-Tab>`); in a snippet the
+  menu is driven with `<C-n>`/`<C-p>`. Proven need (my feel), so it passes the stock rule.
+  Revert = delete the file.
 - `~/.config/astronvim_v4` deleted 2026-10-01 (clean and pushed to `astronvim_v4_config`).
 
 ## Findings so far (2026-10-01)
@@ -248,15 +249,24 @@ Filled in as steps land. Always start the v6 editor with `NVIM_APPNAME=astronvim
 Plain `nvim` must keep starting v5 unchanged.
 
 - Step 2: in a Rust file, `<Leader>uY` toggles semantic highlighting with no warning;
-  `:messages` has no "deprecated" line; codelens (e.g. "Run" above `fn main`) still shows.
+  `:messages` has no "deprecated" line; codelens labels ("Run Test") sit on a virtual line
+  above the code; `<Leader>lL` (capital L = run; `<Leader>ll` = refresh) on the `fn` line
+  below the label runs it. `<Leader>la` is code actions, a different feature.
 - Step 3: in a Rust file: colours look like v5; `vaf` selects the whole function, `]f` jumps to
-  the next one; `zc` folds a function; statusline shows the treesitter icon. Open a filetype
+  the next one; `zc` folds a function (Rust folds come from the LSP first, then treesitter,
+  then indent); statusline shows ` TS` (icon U+F192, a dot in a circle). Open a filetype
   with no parser yet (e.g. a `.go` file): it installs on its own, no error.
-- Step 4: `s` + two letters jumps (flash); `<Leader>xx` opens Trouble; with two Rust errors,
-  virtual lines show only under the line the cursor is on, the other shows virtual text;
-  `<Leader>uV` toggles virtual lines, `<Leader>uD` dismisses notifications; in the completion
-  menu `<Tab>`/`<S-Tab>` move through items, `<Tab>` after a word opens the menu, and in a
-  snippet `<Tab>` jumps to the next field; `:Lazy` shows no red entries. If I use them:
+- Step 4: `s` + two letters jumps (flash); `<Leader>xx` opens Trouble; with two Rust errors:
+  cursor on a clean line = end-of-line text on both; cursor on an error line = virtual line
+  under it only, and end-of-line text off everywhere. `<Leader>uV` toggles virtual lines,
+  `<Leader>uD` dismisses notifications; in the completion menu `<Tab>`/`<S-Tab>` move through
+  items, `<Tab>` after a word opens the menu; `:Lazy` shows no red entries. If I use them:
   Neovide starts normally, and VS Code with vscode-neovim works.
+- Snippets (blink.lua): inside a snippet `<Tab>`/`<S-Tab>` jump fields even with the menu open;
+  `<C-n>`/`<C-p>` drive the menu there.
 - Step 5: `<Leader>lS` opens the symbols outline in a Rust and a Lua file; jumping from it to a
   symbol works; `:messages` has no error.
+
+Results 2026-10-01: all 17 checks pass (codelens and statusline icon after correcting my
+expectations, see above); snippet-first override tried and kept. Not yet done: Neovide,
+VS Code (only if I use them).
