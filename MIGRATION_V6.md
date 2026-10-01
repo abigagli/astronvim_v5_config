@@ -72,6 +72,24 @@ rust-analyzer. **No errors**; `:messages` holds only one line:
   `mason-null-ls.nvim` `settings.lua:46` (called by AstroNvim's own none-ls config).
 - **Step 5 (aerial)**: `<Leader>lS` fed in the probe raised no error; the visual check is mine.
 
+## Step 2 results (AstroLSP, 2026-10-01)
+
+Changes in `lua/plugins/astrolsp.lua`, all matching the current AstroNvim template:
+- `client.supports_method` -> `client:supports_method` (line 118).
+- codelens autocmd: `vim.lsp.codelens.refresh { bufnr }` -> `vim.lsp.codelens.enable(true, { bufnr })`.
+  Evidence: nvim 0.12.5 `runtime/lua/vim/lsp/codelens.lua` marks `refresh` `@deprecated`
+  (removal 0.13.0, alternative `enable(true, { bufnr })`); `doc/deprecated.txt` says the same.
+- `handlers` comments rewritten to v6 style (`["*"]` default, server name only, `vim.lsp.config`).
+- `config["*"]`: not used in my config, nothing to change.
+
+Proof: probe (now also fires `doautocmd BufEnter` to hit the codelens autocmd) run on the old
+file shows 4x `supports_method` + 1x `codelens.refresh` deprecations and the `:messages` line;
+on the new file there are none and `:messages` is empty.
+
+Found on the way (not v6, no action): `selene` fails to spawn (error -86 = wrong CPU type).
+Mason's registry gives `darwin_x64` the arm64-only `selene-*-macos.zip`; the v5 install has the
+same arm64 binary on this x86_64 Mac.
+
 ## How to work with me (rules for every session)
 
 - I work in short slots: keep every step small, commit it on `v6` with a clear message, and
@@ -96,7 +114,7 @@ rust-analyzer. **No errors**; `:messages` holds only one line:
 - [x] 0. Create worktree + branch `v6`, set `version = "^6"`, write this file.
 - [x] 1. First boot: headless `Lazy! sync` in the shadow install; collect every error/warning
       with a probe; record them here.
-- [ ] 2. AstroLSP: rewrite `handlers` comments to v6 style, check `config["*"]`, fix
+- [x] 2. AstroLSP: rewrite `handlers` comments to v6 style, check `config["*"]`, fix
       `supports_method` (dot -> colon) and the codelens call.
 - [ ] 3. Treesitter decision: AstroCore `opts.treesitter` vs keeping tree-sitter-manager (bring
       evidence: does v6's setup install parsers on 0.12.5? do the two clash?).
@@ -110,3 +128,6 @@ rust-analyzer. **No errors**; `:messages` holds only one line:
 
 Filled in as steps land. Always start the v6 editor with `NVIM_APPNAME=astronvim_v6 nvim`.
 Plain `nvim` must keep starting v5 unchanged.
+
+- Step 2: in a Rust file, `<Leader>uY` toggles semantic highlighting with no warning;
+  `:messages` has no "deprecated" line; codelens (e.g. "Run" above `fn main`) still shows.
