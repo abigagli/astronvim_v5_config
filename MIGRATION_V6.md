@@ -90,6 +90,43 @@ Found on the way (not v6, no action): `selene` fails to spawn (error -86 = wrong
 Mason's registry gives `darwin_x64` the arm64-only `selene-*-macos.zip`; the v5 install has the
 same arm64 binary on this x86_64 Mac.
 
+## Step 3 evidence (treesitter, 2026-10-01) — decision pending
+
+Test: a fully isolated copy (own `XDG_CONFIG/DATA/STATE/CACHE_HOME` in the scratchpad), with
+`treesitter-manager.lua` deleted and `treesitter.lua` replaced by an AstroCore spec
+(`opts.treesitter.ensure_installed = { ... }`). `Lazy! sync` cloned nvim-treesitter at the
+AstroNvim pin `61df849`; on start it installed 22 parsers (my list + AstroNvim defaults +
+community packs) into `stdpath("data")/site/parser`, using `/usr/local/bin/tree-sitter` 0.27.0.
+On a Rust buffer:
+
+| feature (Rust buffer)          | A: AstroCore + nvim-treesitter | B: tree-sitter-manager (now) |
+|--------------------------------|--------------------------------|------------------------------|
+| highlighting                   | yes (tested)                   | yes (v5 today)               |
+| TS indent (`indentexpr`)       | yes (tested)                   | no                           |
+| TS folds (`astroui.folding`)   | yes (`has_parser` true)        | no                           |
+| textobjects `af`/`if`/`]f`     | yes (maps set)                 | no                           |
+| statusline TS indicator        | yes (`is_enabled` true)        | no                           |
+| parsers installed              | auto (`auto_install = true`)   | by hand (UI)                 |
+
+Why B loses the rest: `astrocore.treesitter.installed()` asks nvim-treesitter
+(`astrocore/treesitter.lua:64-67`); with nvim-treesitter disabled `has_parser` is always false,
+so AstroCore never enables indent/textobjects and `astroui/folding.lua:22` never uses TS folds.
+v5 has the same gap today.
+
+Clash (from source, not a run): both default to `stdpath("data")/site/parser` and `site/queries`
+(tree-sitter-manager `config.lua:24-25`; nvim-treesitter wrote `site/queries/rust/highlights.scm`
+in the test). Two installers writing the same files at different grammar revisions is the classic
+parser/query mismatch: run one or the other, never both.
+
+Notes for the edit (if A): delete `treesitter-manager.lua`; do NOT re-enable the old
+`treesitter.lua` (its `commit = "HEAD"` would override AstroNvim's tested pin); put the parser
+list in AstroCore `opts.treesitter.ensure_installed` (a plain list merged fine in the test; the
+community-pack style `list_insert_unique` is cleaner). `auto_install_cli` only pulls
+`tree-sitter-cli` from Mason if `tree-sitter` is missing; keep the brew one (Mason's macOS
+binaries can be arm64-only, see `selene`). Test artefact: `ENAMETOOLONG` from `vim.loader`'s
+cache on the long scratch path made `recipes.diagnostic-virtual-lines-current-line` fail to load
+in that run only; unrelated to treesitter.
+
 ## How to work with me (rules for every session)
 
 - I work in short slots: keep every step small, commit it on `v6` with a clear message, and
