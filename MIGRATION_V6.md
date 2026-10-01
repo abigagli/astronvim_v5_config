@@ -149,6 +149,27 @@ in that run only; unrelated to treesitter.
 - The v5 hand-installed set (55 `.dylib`s) is not replicated: `auto_install` fetches the rest on
   first use.
 
+## Step 4 results (AstroCommunity, 2026-10-01)
+
+AstroCommunity at `68db6e1` (main, 2026-09-30). All 21 imports in `lua/community.lua` exist.
+Probe `probe_all.lua`: read lazy.nvim's spec warnings (`Config.spec.notifs`), then
+`require("lazy").load` every plugin one by one, catch notifies, dump `:messages`. Three runs:
+
+| mode                                   | plugins | spec warnings | load errors | `:messages` |
+|----------------------------------------|---------|---------------|-------------|-------------|
+| normal                                 | 58      | none          | none        | empty       |
+| `--cmd "let g:neovide=v:true"`         | 58      | none          | none        | empty       |
+| `g:vscode=1` + stub `vscode` module    | 9       | none          | none        | empty       |
+
+(vscode mode disabling all but 9 plugins is the recipe's design.) No change needed.
+
+Possible clean-ups for later (not migration blockers, my call):
+- `recipes.ai` only wires `<Tab>` to an AI plugin's accept function; since Codeium was removed
+  there is no AI plugin, so it does nothing now.
+- `diagnostics.lsp_lines-nvim`: nvim 0.11+ has native `virtual_lines` diagnostics. The step 1
+  trace shows lsp_lines' renderer serving `virtual_lines` (it replaces the native handler), and it
+  is the plugin with the silent `vim.validate{}` deprecation. Same as v5 today.
+
 ## How to work with me (rules for every session)
 
 - I work in short slots: keep every step small, commit it on `v6` with a clear message, and
@@ -177,7 +198,7 @@ in that run only; unrelated to treesitter.
       `supports_method` (dot -> colon) and the codelens call.
 - [x] 3. Treesitter decision: AstroCore `opts.treesitter` vs keeping tree-sitter-manager (bring
       evidence: does v6's setup install parsers on 0.12.5? do the two clash?).
-- [ ] 4. AstroCommunity: confirm the 21 imports load cleanly on v6 (`pack.*`, `recipes.ai`,
+- [x] 4. AstroCommunity: confirm the 21 imports load cleanly on v6 (`pack.*`, `recipes.ai`,
       `recipes.vscode` first).
 - [ ] 5. Leftovers: is the deprecation warning gone? does aerial `^4` still work (`<Leader>lS`)?
 - [ ] 6. My interactive checks (list below), then delete this file and `CLAUDE.md` and merge `v6` into `main`
@@ -193,3 +214,6 @@ Plain `nvim` must keep starting v5 unchanged.
 - Step 3: in a Rust file: colours look like v5; `vaf` selects the whole function, `]f` jumps to
   the next one; `zc` folds a function; statusline shows the treesitter icon. Open a filetype
   with no parser yet (e.g. a `.go` file): it installs on its own, no error.
+- Step 4: `s` + two letters jumps (flash); `<Leader>xx` opens Trouble; a Rust error shows its
+  virtual lines under the current line only; `:Lazy` shows no red entries. If I use them:
+  Neovide starts normally, and VS Code with vscode-neovim works.
