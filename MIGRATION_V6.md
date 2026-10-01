@@ -34,6 +34,11 @@ starts with it loaded. The first unticked box in the checklist is the resume poi
   indicator, which AstroCore only enables when nvim-treesitter reports the parser; parsers
   install themselves; the nvim-treesitter commit is AstroNvim's tested pin. Never run both
   (shared `site/parser` + `site/queries`). Evidence in "Step 3" below.
+- **On trial: blink "snippet first"** (`lua/plugins/blink.lua`, 2026-10-01). Stock `<Tab>` moves
+  through an open menu before jumping snippet fields; inside snippets the auto-shown menu got in
+  the way (check 15). The file reorders AstroNvim's own lists to
+  `{ snippet_forward, select_next, <show-fn>, fallback }` (same for `<S-Tab>`). Revert = delete
+  the file (or `git revert` its commit) if it doesn't feel better.
 - `~/.config/astronvim_v4` deleted 2026-10-01 (clean and pushed to `astronvim_v4_config`).
 
 ## Findings so far (2026-10-01)
