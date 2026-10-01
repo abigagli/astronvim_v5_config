@@ -24,14 +24,12 @@ return {
 
   -- others
   { import = "astrocommunity.diagnostics.trouble-nvim" },
-  { import = "astrocommunity.diagnostics.lsp_lines-nvim" },
   { import = "astrocommunity.debugging.nvim-dap-virtual-text" },
   { import = "astrocommunity.motion.flash-nvim" },
   { import = "astrocommunity.utility.lua-json5" },
 
   -- recipes
   { import = "astrocommunity.recipes.neovide" },
-  { import = "astrocommunity.recipes.ai" },
   { import = "astrocommunity.recipes.diagnostic-virtual-lines-current-line" },
   { import = "astrocommunity.recipes.vscode" },
 }

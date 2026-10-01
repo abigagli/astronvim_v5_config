@@ -163,12 +163,21 @@ Probe `probe_all.lua`: read lazy.nvim's spec warnings (`Config.spec.notifs`), th
 
 (vscode mode disabling all but 9 plugins is the recipe's design.) No change needed.
 
-Possible clean-ups for later (not migration blockers, my call):
-- `recipes.ai` only wires `<Tab>` to an AI plugin's accept function; since Codeium was removed
-  there is no AI plugin, so it does nothing now.
-- `diagnostics.lsp_lines-nvim`: nvim 0.11+ has native `virtual_lines` diagnostics. The step 1
-  trace shows lsp_lines' renderer serving `virtual_lines` (it replaces the native handler), and it
-  is the plugin with the silent `vim.validate{}` deprecation. Same as v5 today.
+### Clean-ups decided and done (2026-10-01): both imports removed from `lua/community.lua`
+
+- **`diagnostics.lsp_lines-nvim` dropped.** lsp_lines (last commit 2024-12-21) overwrites
+  `vim.diagnostic.handlers.virtual_lines` (`lsp_lines/init.lua:34`) and only reads its own
+  `only_current_line`, so the recipe's native `virtual_lines = { current_line = true }` was
+  ignored. Test (fake errors on lines 1 and 3, cursor on 1): with lsp_lines virtual lines under
+  both; native handler only under line 1. Also: its `<Leader>uD` hid AstroNvim's "Dismiss
+  notifications"; it was a source of the silent `vim.validate{}` deprecation. Now `<Leader>uD`
+  = dismiss notifications, `<Leader>uV`/`<Leader>uv` = AstroNvim's virtual lines/text toggles.
+- **`recipes.ai` dropped.** It was not inert: it replaced blink's `<Tab>` with
+  `{ snippet_forward, ai_accept, fallback }` (no menu cycling); nothing sets `vim.g.ai_accept`
+  since Codeium was removed. Now `<Tab>` is AstroNvim's default
+  `{ select_next, snippet_forward, show-after-word, fallback }` (resolved from lazy opts).
+- After: 57 plugins, load-all probe clean, `:messages` empty; only deprecation left is the
+  silent upstream `vim.validate{}` in `mason-null-ls.nvim` `settings.lua:46`.
 
 ## How to work with me (rules for every session)
 
@@ -214,6 +223,9 @@ Plain `nvim` must keep starting v5 unchanged.
 - Step 3: in a Rust file: colours look like v5; `vaf` selects the whole function, `]f` jumps to
   the next one; `zc` folds a function; statusline shows the treesitter icon. Open a filetype
   with no parser yet (e.g. a `.go` file): it installs on its own, no error.
-- Step 4: `s` + two letters jumps (flash); `<Leader>xx` opens Trouble; a Rust error shows its
-  virtual lines under the current line only; `:Lazy` shows no red entries. If I use them:
+- Step 4: `s` + two letters jumps (flash); `<Leader>xx` opens Trouble; with two Rust errors,
+  virtual lines show only under the line the cursor is on, the other shows virtual text;
+  `<Leader>uV` toggles virtual lines, `<Leader>uD` dismisses notifications; in the completion
+  menu `<Tab>`/`<S-Tab>` move through items, `<Tab>` after a word opens the menu, and in a
+  snippet `<Tab>` jumps to the next field; `:Lazy` shows no red entries. If I use them:
   Neovide starts normally, and VS Code with vscode-neovim works.
