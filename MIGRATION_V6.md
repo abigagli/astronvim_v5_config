@@ -179,6 +179,24 @@ Probe `probe_all.lua`: read lazy.nvim's spec warnings (`Config.spec.notifs`), th
 - After: 57 plugins, load-all probe clean, `:messages` empty; only deprecation left is the
   silent upstream `vim.validate{}` in `mason-null-ls.nvim` `settings.lua:46`.
 
+## Step 5 evidence (leftovers, 2026-10-01) — aerial decision pending
+
+- Deprecation warning: gone since step 2 (`:messages` empty in every probe since).
+- **The recorded reason for the aerial `^4` pin was wrong.** `TSNode:start()` is NOT removed in
+  nvim 0.12.5: documented in `runtime/doc/treesitter.txt:921`, and
+  `nvim --clean` shows `node:start()` works. Real cause of the v5 error: nvim 0.12's
+  `Query:iter_matches` returns a *list* of nodes per capture (the old `{ all = false }` option is
+  gone); aerial v2 still passed `{ all = false }`, got a list, and called `:start()` on it ->
+  "attempt to call method 'start' (a nil value)". Fixed in aerial `f93dcee` "remove use of
+  deprecated iter_matches({all = false})", contained in tags v3.1.0 and v4.0.0.
+- Proof (`nvim --clean` + v6 parsers, aerial treesitter backend only, Rust + Lua file):
+  v2.7.0 fails with the exact v5 error at `helpers.lua:13`; v3.1.0 and v4.0.0 both ok (5 and 1
+  symbols). AstroNvim v6.1 pins `^3` -> v3.1.0, which already has the fix.
+- v3.1.0 -> v4.0.0: only breaking change is `dd80db7` "drop support for nvim <0.12"; plus elm
+  support and `node:range()` in place of `node:start()`.
+- In the real v6 install (aerial v4.0.0): `<Leader>lS` opens the outline on Rust and Lua; the
+  treesitter backend run directly gives the full symbol list; `:messages` clean.
+
 ## How to work with me (rules for every session)
 
 - I work in short slots: keep every step small, commit it on `v6` with a clear message, and
