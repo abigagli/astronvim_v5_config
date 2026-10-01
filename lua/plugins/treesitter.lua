@@ -1,23 +1,18 @@
--- if true then return {} end -- WARN: REMOVE THIS LINE TO ACTIVATE THIS FILE
-
 -- Customize Treesitter
-
--- NOTE: I TRIED TO FOLLOW https://www.reddit.com/r/neovim/comments/1san03g/treesitter_migration_guide_for_nvim_012_to/
--- and https://www.qu8n.com/posts/treesitter-migration-guide-for-nvim-0-12
--- but gave up and just disabled this plugin and started using treesitter-manager
+-- AstroNvim v6 drives nvim-treesitter (`main` branch, pinned by AstroNvim) through AstroCore
+-- `opts.treesitter` (`:h astrocore`). Parsers missing here are installed on first use
+-- (`auto_install = true` in AstroNvim's defaults). Needs the `tree-sitter` CLI (brew).
+-- NOTE: `jsonc` is not a parser in nvim-treesitter `main`; `json` is installed instead.
 
 ---@type LazySpec
 return {
-  "nvim-treesitter/nvim-treesitter",
-  branch = "main",
-  commit = "HEAD",
-  lazy = false,
-  enabled = false,
-  opts = {
-    ensure_installed = {
+  "AstroNvim/astrocore",
+  ---@param opts AstroCoreOpts
+  opts = function(_, opts)
+    opts.treesitter = opts.treesitter or {}
+    opts.treesitter.ensure_installed = require("astrocore").list_insert_unique(opts.treesitter.ensure_installed, {
       "lua",
       "vim",
-      -- add more arguments for adding more treesitter parsers
       "c",
       "cpp",
       "bash",
@@ -25,7 +20,6 @@ return {
       "toml",
       "ron",
       "json",
-      "jsonc",
-    },
-  },
+    })
+  end,
 }

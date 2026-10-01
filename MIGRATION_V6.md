@@ -27,6 +27,11 @@ starts with it loaded. The first unticked box in the checklist is the resume poi
 - **Keep the aerial `^4` override** (`lua/plugins/aerial.lua`). Reason: v6.1.0's
   `lazy_snapshot.lua` still pins `stevearc/aerial.nvim` to `^3`; only aerial v4.0.0 has the fix
   for `node:start()`, removed in nvim 0.12.
+- **Treesitter: AstroCore `opts.treesitter` + nvim-treesitter (option A), tree-sitter-manager
+  dropped** (2026-10-01). Reason: gives TS indent, folds, textobjects and the statusline
+  indicator, which AstroCore only enables when nvim-treesitter reports the parser; parsers
+  install themselves; the nvim-treesitter commit is AstroNvim's tested pin. Never run both
+  (shared `site/parser` + `site/queries`). Evidence in "Step 3" below.
 - `~/.config/astronvim_v4` deleted 2026-10-01 (clean and pushed to `astronvim_v4_config`).
 
 ## Findings so far (2026-10-01)
@@ -90,7 +95,7 @@ Found on the way (not v6, no action): `selene` fails to spawn (error -86 = wrong
 Mason's registry gives `darwin_x64` the arm64-only `selene-*-macos.zip`; the v5 install has the
 same arm64 binary on this x86_64 Mac.
 
-## Step 3 evidence (treesitter, 2026-10-01) — decision pending
+## Step 3 evidence (treesitter, 2026-10-01) — decided: A
 
 Test: a fully isolated copy (own `XDG_CONFIG/DATA/STATE/CACHE_HOME` in the scratchpad), with
 `treesitter-manager.lua` deleted and `treesitter.lua` replaced by an AstroCore spec
@@ -127,6 +132,23 @@ binaries can be arm64-only, see `selene`). Test artefact: `ENAMETOOLONG` from `v
 cache on the long scratch path made `recipes.diagnostic-virtual-lines-current-line` fail to load
 in that run only; unrelated to treesitter.
 
+### Step 3 done
+
+- `lua/plugins/treesitter-manager.lua` deleted (`Lazy! sync` cleaned the plugin).
+- `lua/plugins/treesitter.lua` is now an AstroCore spec adding my parsers with
+  `list_insert_unique`: lua vim c cpp bash rust toml ron json. `jsonc` dropped: not a parser in
+  nvim-treesitter `main` at the pinned commit (`lua/nvim-treesitter/parsers.lua` has no entry).
+- Real v6 install: nvim-treesitter at `61df849`; 22 parsers in
+  `~/.local/share/astronvim_v6/site/parser`. Rust buffer: highlighter on, AstroCore
+  `has_parser`/`is_enabled` true, TS `indentexpr`, `astroui.folding` foldexpr, `af`/`if`/`]f`
+  mapped. Steady-state start: nothing reinstalled, `:messages` empty, no deprecations.
+- First start compiles parsers in the background (cpp/cuda/objc take a while). Quitting during
+  a compile just restarts that parser next time. One headless run sat at "Compiling parser" for
+  280 s without finishing while a later run finished all of them in ~20 s; not explained, no
+  leftover processes. Watch the first interactive start.
+- The v5 hand-installed set (55 `.dylib`s) is not replicated: `auto_install` fetches the rest on
+  first use.
+
 ## How to work with me (rules for every session)
 
 - I work in short slots: keep every step small, commit it on `v6` with a clear message, and
@@ -153,7 +175,7 @@ in that run only; unrelated to treesitter.
       with a probe; record them here.
 - [x] 2. AstroLSP: rewrite `handlers` comments to v6 style, check `config["*"]`, fix
       `supports_method` (dot -> colon) and the codelens call.
-- [ ] 3. Treesitter decision: AstroCore `opts.treesitter` vs keeping tree-sitter-manager (bring
+- [x] 3. Treesitter decision: AstroCore `opts.treesitter` vs keeping tree-sitter-manager (bring
       evidence: does v6's setup install parsers on 0.12.5? do the two clash?).
 - [ ] 4. AstroCommunity: confirm the 21 imports load cleanly on v6 (`pack.*`, `recipes.ai`,
       `recipes.vscode` first).
@@ -168,3 +190,6 @@ Plain `nvim` must keep starting v5 unchanged.
 
 - Step 2: in a Rust file, `<Leader>uY` toggles semantic highlighting with no warning;
   `:messages` has no "deprecated" line; codelens (e.g. "Run" above `fn main`) still shows.
+- Step 3: in a Rust file: colours look like v5; `vaf` selects the whole function, `]f` jumps to
+  the next one; `zc` folds a function; statusline shows the treesitter icon. Open a filetype
+  with no parser yet (e.g. a `.go` file): it installs on its own, no error.
