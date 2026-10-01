@@ -240,8 +240,38 @@ Probe `probe_all.lua`: read lazy.nvim's spec warnings (`Config.spec.notifs`), th
       `recipes.vscode` first).
 - [x] 5. Leftovers: is the deprecation warning gone? does aerial `^4` still work (`<Leader>lS`)?
       (Answer: yes; and the `^4` override was not needed, dropped.)
-- [ ] 6. My interactive checks (list below), then delete this file and `CLAUDE.md` and merge `v6` into `main`
-      (only on my explicit go; then chezmoi's `--ff-only` pull keeps working).
+- [x] 6. My interactive checks (list below): all 17 pass + Neovide pass (2026-10-01). VS Code:
+      not used, skipped.
+- [ ] 7. Switch-over (plan agreed 2026-10-01; **resume here**). Ask my go before 7.2 and again
+      before 7.8. Rule change for this step only: with my go, `~/.config/nvim` and the v5
+      data/state/cache folders MAY be changed as listed below.
+  - [ ] 7.1 Confirm the keep-list with me (I had not answered yet): `~/.local/state/nvim/undo`
+        (408 files, persistent undo), `~/.local/state/nvim/shada` (history/marks/registers),
+        `~/.local/share/nvim/dirsession` and `session` (resession sessions). Everything else is
+        downloads/logs/cache (lazy 393M, mason 1.4G, site 49M with the old `.dylib` parsers,
+        logs, codeium/smart_splits leftovers).
+  - [ ] 7.2 Last commit on `v6`: delete `MIGRATION_V6.md`, `CLAUDE.md`, `migration_probes/`.
+        (Copy this checklist into the session first: after this commit it is gone from disk.)
+  - [ ] 7.3 I quit every running Neovim and Neovide (they write shada on exit).
+  - [ ] 7.4 Move aside (do not delete): `~/.local/share/nvim` -> `~/.local/share/nvim.v5bak`,
+        same for `~/.local/state/nvim` and `~/.cache/nvim`.
+  - [ ] 7.5 In `~/.config/nvim`: `git merge --ff-only v6` (`main` = `origin/main` = `b4f0555`
+        = merge-base on 2026-10-01; re-check first). From now on plain `nvim` is v6.
+  - [ ] 7.6 Copy back from the `.v5bak` folders: `state/nvim/undo`, `state/nvim/shada`,
+        `share/nvim/dirsession`, `share/nvim/session` (plus anything added in 7.1).
+  - [ ] 7.7 Headless first start of plain `nvim`: `Lazy! sync`, then a long run so Mason tools
+        and parsers finish installing (cpp/cuda/objc compile slowly; a run killed mid-compile
+        just retries), then the probes in `migration_probes/` (copy them out before 7.2, or
+        re-create) with `NVIM_APPNAME` unset. Expect: no errors, `:messages` empty, Rust buffer
+        TS active. Then a short interactive look from me (plain `nvim` + Neovide).
+  - [ ] 7.8 `git push origin main` (fast-forward; chezmoi `--ff-only` keeps working).
+  - [ ] 7.9 Later, each with my OK: delete the `*.v5bak` folders; `git worktree remove
+        ~/.config/astronvim_v6`; delete branch `v6`; delete `~/.local/share|state/astronvim_v6`
+        and `~/.cache/astronvim_v6`.
+  - Other machines (after chezmoi pulls the new `main`): install the `tree-sitter` CLI
+    (brew / distro package) and wipe or move aside their old nvim data the same way.
+  - Rollback until 7.8: move the `.v5bak` folders back, `git -C ~/.config/nvim reset --hard
+    b4f0555`.
 
 ## Test steps (mine, interactive)
 
@@ -268,5 +298,6 @@ Plain `nvim` must keep starting v5 unchanged.
   symbol works; `:messages` has no error.
 
 Results 2026-10-01: all 17 checks pass (codelens and statusline icon after correcting my
-expectations, see above); snippet-first override tried and kept. Not yet done: Neovide,
-VS Code (only if I use them).
+expectations, see above); snippet-first override tried and kept. Neovide
+(`NVIM_APPNAME=astronvim_v6 neovide`): window, look and zoom keys fine, no errors. VS Code:
+not used.
