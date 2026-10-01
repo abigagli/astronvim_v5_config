@@ -251,7 +251,7 @@ Plain `nvim` must keep starting v5 unchanged.
   virtual lines show only under the line the cursor is on, the other shows virtual text;
   `<Leader>uV` toggles virtual lines, `<Leader>uD` dismisses notifications; in the completion
   menu `<Tab>`/`<S-Tab>` move through items, `<Tab>` after a word opens the menu, and in a
-  snippet `<Tab>` jumps to the next field; `:Lazy` shows no red entries.
-- Step 5: `<Leader>lS` opens the symbols outline in a Rust and a Lua file; jumping from it to a
-  symbol works; `:messages` has no error. If I use them:
+  snippet `<Tab>` jumps to the next field; `:Lazy` shows no red entries. If I use them:
   Neovide starts normally, and VS Code with vscode-neovim works.
+- Step 5: `<Leader>lS` opens the symbols outline in a Rust and a Lua file; jumping from it to a
+  symbol works; `:messages` has no error.
