@@ -24,9 +24,11 @@ starts with it loaded. The first unticked box in the checklist is the resume poi
 
 - **Migrate my config, not the template.** Each step is a commit on `v6`; the end is a merge into
   `main`. Reason: keeps history and my customisations; the guide's own tip allows it.
-- **Keep the aerial `^4` override** (`lua/plugins/aerial.lua`). Reason: v6.1.0's
-  `lazy_snapshot.lua` still pins `stevearc/aerial.nvim` to `^3`; only aerial v4.0.0 has the fix
-  for `node:start()`, removed in nvim 0.12.
+- **Stick to stock AstroNvim wherever possible** (my rule, 2026-10-01): prefer AstroNvim's own
+  pins and defaults over local overrides; keep an override only with a proven, current need.
+- **Aerial `^4` override dropped** (`lua/plugins/aerial.lua` deleted, 2026-10-01). AstroNvim
+  v6.1's `^3` pin gives v3.1.0, which already has the real fix (`f93dcee`, `iter_matches` lists);
+  the old "node:start() removed in 0.12" reason was wrong. Evidence in "Step 5" below.
 - **Treesitter: AstroCore `opts.treesitter` + nvim-treesitter (option A), tree-sitter-manager
   dropped** (2026-10-01). Reason: gives TS indent, folds, textobjects and the statusline
   indicator, which AstroCore only enables when nvim-treesitter reports the parser; parsers
@@ -179,7 +181,7 @@ Probe `probe_all.lua`: read lazy.nvim's spec warnings (`Config.spec.notifs`), th
 - After: 57 plugins, load-all probe clean, `:messages` empty; only deprecation left is the
   silent upstream `vim.validate{}` in `mason-null-ls.nvim` `settings.lua:46`.
 
-## Step 5 evidence (leftovers, 2026-10-01) — aerial decision pending
+## Step 5 evidence (leftovers, 2026-10-01) — decided: drop the aerial override
 
 - Deprecation warning: gone since step 2 (`:messages` empty in every probe since).
 - **The recorded reason for the aerial `^4` pin was wrong.** `TSNode:start()` is NOT removed in
@@ -196,6 +198,9 @@ Probe `probe_all.lua`: read lazy.nvim's spec warnings (`Config.spec.notifs`), th
   support and `node:range()` in place of `node:start()`.
 - In the real v6 install (aerial v4.0.0): `<Leader>lS` opens the outline on Rust and Lua; the
   treesitter backend run directly gives the full symbol list; `:messages` clean.
+- Done: `lua/plugins/aerial.lua` deleted; `Lazy! sync` checked out aerial v3.1.0 (`645d108`).
+  Same probe on v3.1.0: `<Leader>lS` opens the outline on Rust and Lua, treesitter backend
+  `fetch_symbols_sync` ok, `:messages` clean.
 
 ## How to work with me (rules for every session)
 
@@ -227,7 +232,8 @@ Probe `probe_all.lua`: read lazy.nvim's spec warnings (`Config.spec.notifs`), th
       evidence: does v6's setup install parsers on 0.12.5? do the two clash?).
 - [x] 4. AstroCommunity: confirm the 21 imports load cleanly on v6 (`pack.*`, `recipes.ai`,
       `recipes.vscode` first).
-- [ ] 5. Leftovers: is the deprecation warning gone? does aerial `^4` still work (`<Leader>lS`)?
+- [x] 5. Leftovers: is the deprecation warning gone? does aerial `^4` still work (`<Leader>lS`)?
+      (Answer: yes; and the `^4` override was not needed, dropped.)
 - [ ] 6. My interactive checks (list below), then delete this file and `CLAUDE.md` and merge `v6` into `main`
       (only on my explicit go; then chezmoi's `--ff-only` pull keeps working).
 
@@ -245,5 +251,7 @@ Plain `nvim` must keep starting v5 unchanged.
   virtual lines show only under the line the cursor is on, the other shows virtual text;
   `<Leader>uV` toggles virtual lines, `<Leader>uD` dismisses notifications; in the completion
   menu `<Tab>`/`<S-Tab>` move through items, `<Tab>` after a word opens the menu, and in a
-  snippet `<Tab>` jumps to the next field; `:Lazy` shows no red entries. If I use them:
+  snippet `<Tab>` jumps to the next field; `:Lazy` shows no red entries.
+- Step 5: `<Leader>lS` opens the symbols outline in a Rust and a Lua file; jumping from it to a
+  symbol works; `:messages` has no error. If I use them:
   Neovide starts normally, and VS Code with vscode-neovim works.
