@@ -1,12 +1,12 @@
 # AstroNvim v5 -> v6 migration
 
-Working notes for migrating this config on branch `v6`. Delete this file in the last commit
-before merging into `main`.
+Working notes for migrating this config on branch `v6`. Delete this file and `CLAUDE.md` in the
+last commit before merging into `main`.
 
 ## How to resume
 
-Start Claude Code in `~/.config/astronvim_v6` and say: "continue the v6 migration from
-MIGRATION_V6.md". The first unticked box in the checklist is the resume point.
+Start Claude Code in `~/.config/astronvim_v6`: its `CLAUDE.md` imports this file, so the session
+starts with it loaded. The first unticked box in the checklist is the resume point.
 
 ## State
 
@@ -79,7 +79,7 @@ MIGRATION_V6.md". The first unticked box in the checklist is the resume point.
 - [ ] 4. AstroCommunity: confirm the 21 imports load cleanly on v6 (`pack.*`, `recipes.ai`,
       `recipes.vscode` first).
 - [ ] 5. Leftovers: is the deprecation warning gone? does aerial `^4` still work (`<Leader>lS`)?
-- [ ] 6. My interactive checks (list below), then delete this file and merge `v6` into `main`
+- [ ] 6. My interactive checks (list below), then delete this file and `CLAUDE.md` and merge `v6` into `main`
       (only on my explicit go; then chezmoi's `--ff-only` pull keeps working).
 
 ## Test steps (mine, interactive)
