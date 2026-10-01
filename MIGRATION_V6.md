@@ -40,11 +40,32 @@ MIGRATION_V6.md". The first unticked box in the checklist is the resume point.
     default handler is `vim.lsp.enable`, handlers get only the server name.
   - line ~119 uses `client.supports_method "..."` (dot): likely one source of the
     "client.supports_method is deprecated" warning. 0.12 form: `client:supports_method(...)`.
+    In v5 the once-per-session warning was traced to the v5-pinned snacks.nvim, vim-illuminate
+    and nvim-nio; v6 drops vim-illuminate (replaced by `snacks.words`) and pins snacks `^2`.
   - line ~101 calls `vim.lsp.codelens.refresh { bufnr = ... }`: check against nvim 0.12 API.
 - v6.1.0 pins `nvim-treesitter` (`main` branch) by commit (`61df849` for nvim 0.12) and
   `nvim-treesitter-textobjects` by commit; treesitter config moves to AstroCore `opts.treesitter`.
   My `lua/plugins/treesitter.lua` disables nvim-treesitter and `treesitter-manager.lua` uses
   `romus204/tree-sitter-manager.nvim` instead.
+
+## How to work with me (rules for every session)
+
+- I work in short slots: keep every step small, commit it on `v6` with a clear message, and
+  update this file before stopping.
+- Ask before the first push of `v6`. Never push or merge `main` without my explicit go.
+- Never change `~/.config/nvim` (branch `main`) nor `~/.local/share|state/nvim`, `~/.cache/nvim`:
+  v5 must keep working. Nothing in the chezmoi repo (`~/.local/share/chezmoi`) needs to change.
+- Back claims with evidence (plugin source, `git tag --contains`, command output); the guide may
+  be wrong.
+- Headless probe that works: a Lua file that wraps `vim.notify` to log to a file, feeds keys with
+  `vim.defer_fn` + `nvim_feedkeys`, dumps `:messages`, then `qa!`. Run it as
+  `NVIM_APPNAME=astronvim_v6 perl -e 'alarm 60; exec @ARGV' nvim --headless -c "luafile probe.lua" file`
+  (macOS has no `timeout`). Interactive checks (completion, keys, UI) are mine: give me a short
+  list.
+- One decision at a time. Plain words; add a four-word plain tag after an unavoidable technical
+  term.
+- Commands I must run myself: put them in a script file and give me one short `! bash <path>`
+  line (long pasted lines get wrapped and break).
 
 ## Checklist
 
