@@ -1,7 +1,9 @@
 -- Customize CodeCompanion (installed by `astrocommunity.ai.codecompanion-nvim`, keys under <Leader>A)
 -- The chat talks to Claude Code through the `claude_code` ACP adapter, which spawns the
--- `claude-agent-acp` bridge. Install it once per machine, with no sudo, into ~/.local/bin:
---   npm install -g --prefix ~/.local @agentclientprotocol/claude-agent-acp
+-- `claude-agent-acp` bridge, which must be on PATH. Install it once per machine (current releases
+-- need node >=22):
+--   npm install -g @agentclientprotocol/claude-agent-acp
+-- With a root-owned npm prefix (e.g. MacPorts node), add `--prefix ~/.local` to avoid sudo.
 -- Login: the bridge reuses the existing `claude` CLI login, so no token is needed here.
 -- NOTE: ACP adapters are chat-only. Inline (<Leader>Aq, :CodeCompanion) and :CodeCompanionCmd still
 -- default to Copilot and will fail until an HTTP adapter (e.g. `anthropic` + API key) is set below.
