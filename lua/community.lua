@@ -23,6 +23,7 @@ return {
   --{ import = "astrocommunity.pack.typescript" },
 
   -- others
+  { import = "astrocommunity.ai.codecompanion-nvim" },
   { import = "astrocommunity.diagnostics.trouble-nvim" },
   { import = "astrocommunity.debugging.nvim-dap-virtual-text" },
   { import = "astrocommunity.motion.flash-nvim" },
