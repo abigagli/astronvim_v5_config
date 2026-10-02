@@ -245,11 +245,11 @@ Probe `probe_all.lua`: read lazy.nvim's spec warnings (`Config.spec.notifs`), th
 - [ ] 7. Switch-over (plan agreed 2026-10-01; **resume here**). Ask my go before 7.2 and again
       before 7.8. Rule change for this step only: with my go, `~/.config/nvim` and the v5
       data/state/cache folders MAY be changed as listed below.
-  - [ ] 7.1 Confirm the keep-list with me (I had not answered yet): `~/.local/state/nvim/undo`
-        (408 files, persistent undo), `~/.local/state/nvim/shada` (history/marks/registers),
-        `~/.local/share/nvim/dirsession` and `session` (resession sessions). Everything else is
-        downloads/logs/cache (lazy 393M, mason 1.4G, site 49M with the old `.dylib` parsers,
-        logs, codeium/smart_splits leftovers).
+  - [x] 7.1 Keep-list: **empty, drop everything** (my decision, 2026-10-02). Not copied back:
+        `~/.local/state/nvim/undo` (persistent undo), `~/.local/state/nvim/shada`
+        (history/marks/registers), `~/.local/share/nvim/dirsession` and `session` (resession
+        sessions), nor the downloads/logs/cache (lazy, mason, site, logs, leftovers). v6 starts
+        from empty data/state/cache. The `.v5bak` folders (7.4) still hold all of it until 7.9.
   - [ ] 7.2 Last commit on `v6`: delete `MIGRATION_V6.md`, `CLAUDE.md`, `migration_probes/`.
         (Copy this checklist into the session first: after this commit it is gone from disk.
         Copy `migration_probes/*.lua` into the new session's scratchpad first too: 7.7 needs
@@ -259,8 +259,8 @@ Probe `probe_all.lua`: read lazy.nvim's spec warnings (`Config.spec.notifs`), th
         same for `~/.local/state/nvim` and `~/.cache/nvim`.
   - [ ] 7.5 In `~/.config/nvim`: `git merge --ff-only v6` (`main` = `origin/main` = `b4f0555`
         = merge-base on 2026-10-01; re-check first). From now on plain `nvim` is v6.
-  - [ ] 7.6 Copy back from the `.v5bak` folders: `state/nvim/undo`, `state/nvim/shada`,
-        `share/nvim/dirsession`, `share/nvim/session` (plus anything added in 7.1).
+  - [ ] 7.6 Nothing to copy back (7.1 keep-list is empty). Just check that `~/.local/share/nvim`,
+        `~/.local/state/nvim` and `~/.cache/nvim` do not exist before the first start.
   - [ ] 7.7 Headless first start of plain `nvim`: `Lazy! sync`, then a long run so Mason tools
         and parsers finish installing (cpp/cuda/objc compile slowly; a run killed mid-compile
         just retries), then the probes in `migration_probes/` (copy them out before 7.2, or
