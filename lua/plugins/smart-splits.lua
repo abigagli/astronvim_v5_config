@@ -6,8 +6,9 @@
 -- (same as AstroNvim's spec) redirects there, so lazy.nvim sees no URL change.
 -- Rex (2026-11-24): community backend rawnly/smart-splits-backend-rex, the Neovim half of the
 -- ctrl+hjkl / alt+hjkl keys in Rex's init.lua (chezmoi). Backends are tried in list order, so the
--- same setup works in Rex and in WezTerm. Not pinned on purpose: if a Rex update breaks detection
--- (it needs REX_SESSION and REX_BLOCK), the fix arrives as a plugin update.
+-- same setup works in Rex and in WezTerm. Not pinned on purpose: if a Rex update breaks detection,
+-- the fix arrives as a plugin update. That happened once: Rex preview.23 stopped setting REX_SESSION,
+-- and the plugin's 0.0.4 (2026-11-25) detects Rex from REX_BLOCK alone.
 ---@type LazySpec
 return {
   "mrjones2014/smart-splits.nvim",
